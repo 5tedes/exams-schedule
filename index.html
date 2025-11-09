@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>December Exams & Revision Schedule</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 15px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 40px;
+            font-size: 1.2em;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .legend-box {
+            width: 25px;
+            height: 25px;
+            border-radius: 5px;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .legend-exam { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
+        .legend-revision { background: linear-gradient(135deg, #f39c12 0%, #d68910 100%); }
+        .legend-rest { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }
+        
+        /* Subject-specific colors */
+        .greek { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border-color: #21618c; }
+        .maths { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); border-color: #a93226; }
+        .english { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); border-color: #6c3483; }
+        .science { background: linear-gradient(135deg, #27ae60 0%, #229954 100%); border-color: #1e8449; }
+        
+        /* Combined subject gradients */
+        .greek-maths { background: linear-gradient(135deg, #3498db 0%, #e74c3c 100%); border-color: #8b6ba0; }
+        .greek-english { background: linear-gradient(135deg, #3498db 0%, #9b59b6 100%); border-color: #6779c5; }
+        .maths-science { background: linear-gradient(135deg, #e74c3c 0%, #27ae60 100%); border-color: #87644e; }
+
+        .calendar {
+            background: #2c3e50;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .calendar-month {
+            text-align: center;
+            font-size: 2em;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .calendar-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .day-name {
+            text-align: center;
+            font-weight: 700;
+            color: #3498db;
+            padding: 10px;
+            font-size: 1.1em;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .day-cell {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            min-height: 120px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            background: #34495e;
+        }
+
+        .day-cell:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        .day-cell.empty {
+            background: #1a252f;
+            opacity: 0.3;
+        }
+
+        .day-cell.exam {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border-color: #a93226;
+        }
+
+        .day-cell.revision {
+            background: linear-gradient(135deg, #f39c12 0%, #d68910 100%);
+            color: white;
+            border-color: #b9770e;
+        }
+
+        .day-cell.rest {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border-color: #21618c;
+        }
+
+        .day-number {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .day-cell.empty .day-number {
+            color: rgba(255,255,255,0.3);
+        }
+
+        .day-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .event-type {
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+
+        .event-title {
+            font-weight: 600;
+            font-size: 0.95em;
+            line-height: 1.3;
+        }
+
+        .subject-icon {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 1.5em;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .calendar {
+                padding: 15px;
+            }
+
+            .calendar-grid {
+                gap: 5px;
+            }
+
+            .day-cell {
+                min-height: 100px;
+                padding: 8px;
+            }
+
+            .day-number {
+                font-size: 1.1em;
+            }
+
+            .event-title {
+                font-size: 0.85em;
+            }
+
+            .legend {
+                gap: 15px;
+            }
+
+            .legend-item {
+                padding: 8px 15px;
+                font-size: 0.9em;
+            }
+
+            .calendar-month {
+                font-size: 1.5em;
+            }
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-link a {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .back-link a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 December Exams & Revision Schedule</h1>
+        <p class="subtitle">Stay organized and ace your exams! 🎯</p>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-box legend-exam"></div>
+                <span>Exam Day</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box legend-revision"></div>
+                <span>Revision Day</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box legend-rest"></div>
+                <span>Rest Day</span>
+            </div>
+        </div>
+
+        <div class="calendar">
+            <div class="calendar-month">December 2025</div>
+            
+            <div class="calendar-header">
+                <div class="day-name">Mon</div>
+                <div class="day-name">Tue</div>
+                <div class="day-name">Wed</div>
+                <div class="day-name">Thu</div>
+                <div class="day-name">Fri</div>
+                <div class="day-name">Sat</div>
+                <div class="day-name">Sun</div>
+            </div>
+
+            <div class="calendar-grid">
+                <!-- Week 1: Dec 1-7 -->
+                <div class="day-cell revision greek-maths">
+                    <div class="day-number">1</div>
+                    <div class="day-content">
+                        <div class="event-type">Revision</div>
+                        <div class="event-title">Greek & Maths Review</div>
+                    </div>
+                    <div class="subject-icon">📖</div>
+                </div>
+                <div class="day-cell revision maths">
+                    <div class="day-number">2</div>
+                    <div class="day-content">
+                        <div class="event-type">Revision</div>
+                        <div class="event-title">Maths Practice</div>
+                    </div>
+                    <div class="subject-icon">📐</div>
+                </div>
+                <div class="day-cell revision greek-maths">
+                    <div class="day-number">3</div>
+                    <div class="day-content">
+                        <div class="event-type">Revision</div>
+                        <div class="event-title">Greek & Maths</div>
+                    </div>
+                    <div class="subject-icon">📖</div>
+                </div>
+                <div class="day-cell revision maths">
+                    <div class="day-number">4</div>
+                    <div class="day-content">
+                        <div class="event-type">Revision</div>
+                        <div class="event-title">Maths Problems</div>
+                    </div>
+                    <div class="subject-icon">📐</div>
+                </div>
+                <div class="day-cell revision greek">
+                    <div class="day-number">5</div>
+                    <div class="day-content">
+                        <div class="event-type">Revision</div>
+                        <div class="event-title">Greek Final Review</div>
+                    </div>
+                    <div class="subject-icon">🏺</div>
+                </div>
+                <div class="day-cell revision maths">
+                    <div class="day-number">6</div>
+                    <div class="day-content">
+                        <div class="event-type">Revision</div>
+                        <div class="event-title">Maths Mock Test</div>
+                    </div>
+                    <div class="subject-icon">📐</div>
+                </div>
+                <div class="day-cell rest">
+                    <div class="day-number">7</div>
+                    <div class="day-content">
+                        <div class="event-type">Rest Day</div>
+                        <div class="event-title">Relax & Recharge</div>
+                    </div>
+                    <div class="subject-icon">😊</div>
+                </div>
+
+                <!-- Week 2: Dec 8-14 -->
+                <div class="day-cell exam greek">
+                    <div class="day-number">8</div>
+                    <div class="day-content">
+                        <div class="event-type">🎯 Exam Day</div>
+                        <div class="event-title">Greek Exam</div>
+                    </div>
+                    <div class="subject-icon">🏺</div>
+                </div>
+                <div class="day-cell revision maths">
+                    <div class="day-number">9</div>
+                    <div class="day-content">
+                        <div class="event-type">Revision</div>
+                        <div class="event-title">Maths Practice</div>
+                    </div>
+                    <div class="subject-icon">📐</div>
+                </div>
+                <div class="day-cell exam maths">
+                    <div class="day-number">10</div>
+                    <div class="day-content">
+                        <div class="event-type">🎯 Exam Day</div>
+                        <div class="event-title">Maths Exam</div>
+                    </div>
+                    <div class="subject-icon">📐</div>
+                </div>
+                <div class="day-cell revision english">
+                    <div class="day-number">11</div>
+                    <div class="day-content">
+                        <div class="event-type">Revision</div>
+                        <div class="event-title">English Reading</div>
+                    </div>
+                    <div class="subject-icon">📝</div>
+                </div>
+                <div class="day-cell revision english">
+                    <div class="day-number">12</div>
+                    <div class="day-content">
+                        <div class="event-type">Revision</div>
+                        <div class="event-title">English Writing</div>
+                    </div>
+                    <div class="subject-icon">📝</div>
+                </div>
+                <div class="day-cell revision english">
+                    <div class="day-number">13</div>
+                    <div class="day-content">
+                        <div class="event-type">Revision</div>
+                        <div class="event-title">English Practice</div>
+                    </div>
+                    <div class="subject-icon">📝</div>
+                </div>
+                <div class="day-cell rest">
+                    <div class="day-number">14</div>
+                    <div class="day-content">
+                        <div class="event-type">Rest Day</div>
+                        <div class="event-title">Weekend Break</div>
+                    </div>
+                    <div class="subject-icon">😊</div>
+                </div>
+
+                <!-- Week 3: Dec 15-21 -->
+                <div class="day-cell revision english">
+                    <div class="day-number">15</div>
+                    <div class="day-content">
+                        <div class="event-type">Revision</div>
+                        <div class="event-title">English Mock Test</div>
+                    </div>
+                    <div class="subject-icon">📝</div>
+                </div>
+                <div class="day-cell exam english">
+                    <div class="day-number">16</div>
+                    <div class="day-content">
+                        <div class="event-type">🎯 Exam Day</div>
+                        <div class="event-title">English Exam</div>
+                    </div>
+                    <div class="subject-icon">📝</div>
+                </div>
+                <div class="day-cell revision science">
+                    <div class="day-number">17</div>
+                    <div class="day-content">
+                        <div class="event-type">Revision</div>
+                        <div class="event-title">Science Review</div>
+                    </div>
+                    <div class="subject-icon">🔬</div>
+                </div>
+                <div class="day-cell revision science">
+                    <div class="day-number">18</div>
+                    <div class="day-content">
+                        <div class="event-type">Revision</div>
+                        <div class="event-title">Science Practice</div>
+                    </div>
+                    <div class="subject-icon">🔬</div>
+                </div>
+                <div class="day-cell exam science">
+                    <div class="day-number">19</div>
+                    <div class="day-content">
+                        <div class="event-type">🎯 Exam Day</div>
+                        <div class="event-title">Science Exam</div>
+                    </div>
+                    <div class="subject-icon">🔬</div>
+                </div>
+                <div class="day-cell rest">
+                    <div class="day-number">20</div>
+                    <div class="day-content">
+                        <div class="event-type">Celebration</div>
+                        <div class="event-title">All Exams Done! 🎉</div>
+                    </div>
+                    <div class="subject-icon">🎊</div>
+                </div>
+                <div class="day-cell empty">
+                    <div class="day-number"></div>
+                </div>
+
+                <!-- Empty cells to complete the grid -->
+                <div class="day-cell empty">
+                    <div class="day-number"></div>
+                </div>
+                <div class="day-cell empty">
+                    <div class="day-number"></div>
+                </div>
+                <div class="day-cell empty">
+                    <div class="day-number"></div>
+                </div>
+                <div class="day-cell empty">
+                    <div class="day-number"></div>
+                </div>
+                <div class="day-cell empty">
+                    <div class="day-number"></div>
+                </div>
+                <div class="day-cell empty">
+                    <div class="day-number"></div>
+                </div>
+                <div class="day-cell empty">
+                    <div class="day-number"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="back-link">
+            <a href="https://5tedes.github.io/">← Back to Main Page</a>
+        </div>
+    </div>
+</body>
+</html>
